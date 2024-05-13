@@ -4,14 +4,17 @@ from asgiref.sync import async_to_sync
 class MySyncConsumer(SyncConsumer):
     def websocket_connect(self,event):
         print('websocket connection established...',event)
+        self.group_name = self.scope['url_route']['kwargs']['group_name']
+        print(self.group_name)
+        async_to_sync(self.channel_layer.group_add)(self.group_name,self.channel_name)
         self.send({
             'type':'websocket.accept',
         })
-        async_to_sync(self.channel_layer.group_add)('Global',self.channel_name)
+        
 
     def websocket_receive(self,event):
         print('msg received from client',event)
-        self.channel_layer.group_send('Global',{
+        async_to_sync(self.channel_layer.group_send)(self.group_name,{
             'type':'chat.msg',
             'msg':event['text']
         })
@@ -27,5 +30,5 @@ class MySyncConsumer(SyncConsumer):
         print('websocket disconnected...',event)
         print('channel layer',self.channel_layer) #get default channel layer
         print('channel name',self.channel_name)
-        async_to_sync(self.channel_layer.group_discard)('global',self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(self.group_name,self.channel_name)
         raise StopConsumer()

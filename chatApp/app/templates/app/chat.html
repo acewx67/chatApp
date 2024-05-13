@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+</head>
+<body>
+    {{group_name|json_script:'groupName'}}
+    <textarea name="" id="msgBox" cols="150" rows="15"></textarea>
+    <form action="">
+        <input type="text" placeholder="Press Enter to send" id="text-input">
+        <input type="submit" value="Send" id="send-btn">
+    </form>
+    
+    <script>
+        var group_name = JSON.parse(document.getElementById('groupName').textContent)
+        console.log(group_name);
+        var ws = new WebSocket(`ws://${window.location.host}/ws/sc/${group_name}/`)
+        let msgBox = document.getElementById('msgBox')
+        ws.onopen = function(event){
+            console.log('websocket conn established...',event);
+        }
+        ws.onmessage = function(event){
+            console.log('msg received from server',event.data);
+            let msg = JSON.parse(event.data)
+            msgBox.value += msg.msg + '\n'
+        }
+        
+
+        document.getElementById('send-btn').onclick = function(event){
+            let input_msg_box = document.getElementById('text-input')
+            ws.send(JSON.stringify({
+                'msg':input_msg_box.value,
+            }))
+            input_msg_box.value = ''
+        }
+
+    </script>
+</body>
+</html>
