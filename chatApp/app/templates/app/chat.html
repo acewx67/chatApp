@@ -17,18 +17,23 @@
         var group_name = JSON.parse(document.getElementById('groupName').textContent)
         console.log(group_name);
         var ws = new WebSocket(`ws://${window.location.host}/ws/sc/${group_name}/`)
+        console.log(ws);
         let msgBox = document.getElementById('msgBox')
         ws.onopen = function(event){
             console.log('websocket conn established...',event);
         }
         ws.onmessage = function(event){
             console.log('msg received from server',event.data);
+            // print(event.data);
             let msg = JSON.parse(event.data)
             msgBox.value += msg.msg + '\n'
+            // msgBox.value += event.data + '\n'
         }
         
 
         document.getElementById('send-btn').onclick = function(event){
+            event.preventDefault()
+            console.log('sending....');
             let input_msg_box = document.getElementById('text-input')
             ws.send(JSON.stringify({
                 'msg':input_msg_box.value,

@@ -30,5 +30,7 @@ class MySyncConsumer(SyncConsumer):
         print('websocket disconnected...',event)
         print('channel layer',self.channel_layer) #get default channel layer
         print('channel name',self.channel_name)
+        # print(self.group_name)
+        # print('pppppppppppppp')
         async_to_sync(self.channel_layer.group_discard)(self.group_name,self.channel_name)
         raise StopConsumer()
