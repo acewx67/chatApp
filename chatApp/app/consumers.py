@@ -1,15 +1,23 @@
 from channels.consumer import SyncConsumer,AsyncConsumer
 from channels.exceptions import StopConsumer
 from asgiref.sync import async_to_sync
+from . models import Chat,Group
+import json
 class MySyncConsumer(SyncConsumer):
+    group = None
     def websocket_connect(self,event):
         print('websocket connection established...',event)
         self.group_name = self.scope['url_route']['kwargs']['group_name']
+        try:
+            MySyncConsumer.group = Group.objects.filter(name=self.group_name).first()
+        except:
+            MySyncConsumer.group = None
         print(self.group_name)
         async_to_sync(self.channel_layer.group_add)(self.group_name,self.channel_name)
         self.send({
             'type':'websocket.accept',
         })
+        
         
 
     def websocket_receive(self,event):
@@ -18,6 +26,13 @@ class MySyncConsumer(SyncConsumer):
             'type':'chat.msg',
             'msg':event['text']
         })
+        content = json.loads(event['text'])
+        print('content',content['msg'])
+        group = Group.objects.get(name=self.group_name)
+        # Chat.objects.create(message=content['msg'],group=MySyncConsumer.group)
+        Chat.objects.create(message=content['msg'],group=group)
+        # print(MySyncConsumer.group)
+
     def chat_msg(self,event):
         print('msg...',event)
         print('actual Data',event['msg'])

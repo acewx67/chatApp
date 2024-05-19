@@ -6,8 +6,9 @@
     <title>Chat App</title>
 </head>
 <body>
+    <h1>GroupName: {{group_name}}</h1>
     {{group_name|json_script:'groupName'}}
-    <textarea name="" id="msgBox" cols="150" rows="15"></textarea>
+    <textarea name="" id="msgBox" cols="150" rows="15">{% for msg in msgs %}  {{msg.message}}&#13;&#10;{% endfor %}</textarea>
     <form action="">
         <input type="text" placeholder="Press Enter to send" id="text-input">
         <input type="submit" value="Send" id="send-btn">
@@ -26,7 +27,7 @@
             console.log('msg received from server',event.data);
             // print(event.data);
             let msg = JSON.parse(event.data)
-            msgBox.value += msg.msg + '\n'
+            msgBox.value += "  " + msg.msg + '\n'
             // msgBox.value += event.data + '\n'
         }
         
