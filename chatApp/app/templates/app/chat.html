@@ -17,7 +17,7 @@
     <script>
         var group_name = JSON.parse(document.getElementById('groupName').textContent)
         console.log(group_name);
-        var ws = new WebSocket(`ws://${window.location.host}/ws/sc/${group_name}/`)
+        var ws = new WebSocket(`ws://${window.location.host}/ws/ac/${group_name}/`)
         console.log(ws);
         let msgBox = document.getElementById('msgBox')
         ws.onopen = function(event){
